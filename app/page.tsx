@@ -115,7 +115,7 @@ export default function Portfolio() {
               <div className="text-slate-600 dark:text-slate-300">Years Experience</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-slate-900 dark:text-white">25+</div>
+              <div className="text-3xl font-bold text-slate-900 dark:text-white">5+</div>
               <div className="text-slate-600 dark:text-slate-300">Projects Completed</div>
             </div>
             <div>
