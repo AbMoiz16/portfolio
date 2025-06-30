@@ -1,5 +1,5 @@
 {
-  "name": "abdul-moiz-portfolio",
+  "name": "portfolio",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,10 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^0.0.66",
     "@hookform/resolvers": "^3.9.1",
-    "@neondatabase/serverless": "^0.10.3",
-    "@next/third-parties": "^15.1.0",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",
     "@radix-ui/react-aspect-ratio": "latest",
@@ -40,12 +37,10 @@
     "@radix-ui/react-toggle": "latest",
     "@radix-ui/react-toggle-group": "latest",
     "@radix-ui/react-tooltip": "latest",
-    "ai": "^4.0.16",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "latest",
     "embla-carousel-react": "latest",
-    "framer-motion": "^11.15.0",
     "input-otp": "latest",
     "lucide-react": "^0.454.0",
     "next": "15.2.4",
