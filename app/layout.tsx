@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "Professional QA Engineer specializing in manual testing, automation testing, and comprehensive QA strategies",
   keywords: "QA Engineer, Software Testing, Automation Testing, Python, Selenium",
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
@@ -22,7 +22,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          forcedTheme="dark"
+          disableTransitionOnChange={false}
+        >
           {children}
         </ThemeProvider>
       </body>

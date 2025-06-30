@@ -10,7 +10,11 @@ export const contactFormSchema = {
       errors.push("Last name must be at least 2 characters")
     }
 
-    if (!data.email || !data.email.includes("@") || data.email.trim().length < 5) {
+    // Enhanced email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!data.email || data.email.trim().length === 0) {
+      errors.push("Email is required")
+    } else if (!emailRegex.test(data.email.trim())) {
       errors.push("Please enter a valid email address")
     }
 

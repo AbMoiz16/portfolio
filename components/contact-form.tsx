@@ -10,54 +10,99 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle, AlertCircle, Loader2 } from "lucide-react"
 import { submitContactForm } from "@/actions/contact"
 
+interface FormErrors {
+  firstName?: string
+  lastName?: string
+  email?: string
+  subject?: string
+  message?: string
+}
+
 export function ContactForm() {
   const [state, formAction, isPending] = useActionState(submitContactForm, { success: false, message: "" })
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<FormErrors>({})
 
-  const validateForm = (formData: FormData) => {
-    const newErrors: Record<string, string> = {}
-
-    const firstName = formData.get("firstName") as string
-    const lastName = formData.get("lastName") as string
-    const email = formData.get("email") as string
-    const subject = formData.get("subject") as string
-    const message = formData.get("message") as string
-
-    if (!firstName || firstName.trim().length < 2) {
-      newErrors.firstName = "First name must be at least 2 characters"
-    }
-
-    if (!lastName || lastName.trim().length < 2) {
-      newErrors.lastName = "Last name must be at least 2 characters"
-    }
-
-    if (!email || !email.includes("@") || email.trim().length < 5) {
-      newErrors.email = "Please enter a valid email address"
-    }
-
-    if (!subject || subject.trim().length < 3) {
-      newErrors.subject = "Subject must be at least 3 characters"
-    }
-
-    if (!message || message.trim().length < 10) {
-      newErrors.message = "Message must be at least 10 characters"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
   }
 
-  const handleSubmit = (formData: FormData) => {
+  const validateField = (name: string, value: string): string | undefined => {
+    switch (name) {
+      case "firstName":
+        if (!value || value.trim().length < 2) {
+          return "First name must be at least 2 characters"
+        }
+        break
+      case "lastName":
+        if (!value || value.trim().length < 2) {
+          return "Last name must be at least 2 characters"
+        }
+        break
+      case "email":
+        if (!value || value.trim().length === 0) {
+          return "Email is required"
+        }
+        if (!validateEmail(value.trim())) {
+          return "Please enter a valid email address (e.g., user@example.com)"
+        }
+        break
+      case "subject":
+        if (!value || value.trim().length < 3) {
+          return "Subject must be at least 3 characters"
+        }
+        break
+      case "message":
+        if (!value || value.trim().length < 10) {
+          return "Message must be at least 10 characters"
+        }
+        break
+    }
+    return undefined
+  }
+
+  const handleInputChange = (name: string, value: string) => {
+    const error = validateField(name, value)
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }))
+  }
+
+  const validateForm = (formData: FormData): boolean => {
+    const newErrors: FormErrors = {}
+    let isValid = true
+
+    const fields = ["firstName", "lastName", "email", "subject", "message"]
+
+    fields.forEach((field) => {
+      const value = formData.get(field) as string
+      const error = validateField(field, value)
+      if (error) {
+        newErrors[field as keyof FormErrors] = error
+        isValid = false
+      }
+    })
+
+    setErrors(newErrors)
+    return isValid
+  }
+
+  const handleSubmit = async (formData: FormData) => {
     if (validateForm(formData)) {
-      formAction(formData)
+      await formAction(formData)
+      // Clear form on successful submission
+      if (state.success) {
+        setErrors({})
+      }
     }
   }
 
   return (
-    <Card className="bg-slate-800/50 dark:bg-slate-800/50 light:bg-white border-slate-700 dark:border-slate-700 light:border-slate-200">
+    <Card className="bg-slate-800/50 border-slate-700">
       <CardHeader>
-        <CardTitle className="text-white dark:text-white light:text-slate-900">Send a Message</CardTitle>
-        <CardDescription className="text-slate-300 dark:text-slate-300 light:text-slate-600">
+        <CardTitle className="text-white">Send a Message</CardTitle>
+        <CardDescription className="text-slate-300">
           Fill out the form below and I'll get back to you within 24 hours.
         </CardDescription>
       </CardHeader>
@@ -80,7 +125,7 @@ export function ContactForm() {
         <form action={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="firstName" className="text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <Label htmlFor="firstName" className="text-slate-300">
                 First Name *
               </Label>
               <Input
@@ -89,14 +134,15 @@ export function ContactForm() {
                 placeholder="John"
                 required
                 disabled={isPending}
-                className={`bg-slate-700 dark:bg-slate-700 light:bg-white border-slate-600 dark:border-slate-600 light:border-slate-300 text-white dark:text-white light:text-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-400 light:placeholder:text-slate-500 ${
+                onChange={(e) => handleInputChange("firstName", e.target.value)}
+                className={`bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 ${
                   errors.firstName ? "border-red-500" : ""
                 }`}
               />
               {errors.firstName && <p className="text-red-400 text-sm mt-1">{errors.firstName}</p>}
             </div>
             <div>
-              <Label htmlFor="lastName" className="text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <Label htmlFor="lastName" className="text-slate-300">
                 Last Name *
               </Label>
               <Input
@@ -105,7 +151,8 @@ export function ContactForm() {
                 placeholder="Doe"
                 required
                 disabled={isPending}
-                className={`bg-slate-700 dark:bg-slate-700 light:bg-white border-slate-600 dark:border-slate-600 light:border-slate-300 text-white dark:text-white light:text-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-400 light:placeholder:text-slate-500 ${
+                onChange={(e) => handleInputChange("lastName", e.target.value)}
+                className={`bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 ${
                   errors.lastName ? "border-red-500" : ""
                 }`}
               />
@@ -113,7 +160,7 @@ export function ContactForm() {
             </div>
           </div>
           <div>
-            <Label htmlFor="email" className="text-slate-300 dark:text-slate-300 light:text-slate-700">
+            <Label htmlFor="email" className="text-slate-300">
               Email *
             </Label>
             <Input
@@ -123,14 +170,15 @@ export function ContactForm() {
               placeholder="john@example.com"
               required
               disabled={isPending}
-              className={`bg-slate-700 dark:bg-slate-700 light:bg-white border-slate-600 dark:border-slate-600 light:border-slate-300 text-white dark:text-white light:text-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-400 light:placeholder:text-slate-500 ${
+              onChange={(e) => handleInputChange("email", e.target.value)}
+              className={`bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 ${
                 errors.email ? "border-red-500" : ""
               }`}
             />
             {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
           </div>
           <div>
-            <Label htmlFor="subject" className="text-slate-300 dark:text-slate-300 light:text-slate-700">
+            <Label htmlFor="subject" className="text-slate-300">
               Subject *
             </Label>
             <Input
@@ -139,14 +187,15 @@ export function ContactForm() {
               placeholder="Project Discussion"
               required
               disabled={isPending}
-              className={`bg-slate-700 dark:bg-slate-700 light:bg-white border-slate-600 dark:border-slate-600 light:border-slate-300 text-white dark:text-white light:text-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-400 light:placeholder:text-slate-500 ${
+              onChange={(e) => handleInputChange("subject", e.target.value)}
+              className={`bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 ${
                 errors.subject ? "border-red-500" : ""
               }`}
             />
             {errors.subject && <p className="text-red-400 text-sm mt-1">{errors.subject}</p>}
           </div>
           <div>
-            <Label htmlFor="message" className="text-slate-300 dark:text-slate-300 light:text-slate-700">
+            <Label htmlFor="message" className="text-slate-300">
               Message *
             </Label>
             <Textarea
@@ -156,7 +205,8 @@ export function ContactForm() {
               rows={4}
               required
               disabled={isPending}
-              className={`bg-slate-700 dark:bg-slate-700 light:bg-white border-slate-600 dark:border-slate-600 light:border-slate-300 text-white dark:text-white light:text-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-400 light:placeholder:text-slate-500 ${
+              onChange={(e) => handleInputChange("message", e.target.value)}
+              className={`bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 ${
                 errors.message ? "border-red-500" : ""
               }`}
             />
