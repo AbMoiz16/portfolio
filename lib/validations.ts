@@ -2,23 +2,23 @@ export const contactFormSchema = {
   parse: (data: any) => {
     const errors: string[] = []
 
-    if (!data.firstName || data.firstName.length < 2) {
+    if (!data.firstName || data.firstName.trim().length < 2) {
       errors.push("First name must be at least 2 characters")
     }
 
-    if (!data.lastName || data.lastName.length < 2) {
+    if (!data.lastName || data.lastName.trim().length < 2) {
       errors.push("Last name must be at least 2 characters")
     }
 
-    if (!data.email || !data.email.includes("@")) {
+    if (!data.email || !data.email.includes("@") || data.email.trim().length < 5) {
       errors.push("Please enter a valid email address")
     }
 
-    if (!data.subject || data.subject.length < 5) {
-      errors.push("Subject must be at least 5 characters")
+    if (!data.subject || data.subject.trim().length < 3) {
+      errors.push("Subject must be at least 3 characters")
     }
 
-    if (!data.message || data.message.length < 10) {
+    if (!data.message || data.message.trim().length < 10) {
       errors.push("Message must be at least 10 characters")
     }
 
