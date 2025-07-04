@@ -34,7 +34,7 @@ export async function submitContactForm(prevState: any, formData: FormData) {
 
     // Check if Resend API key exists
     if (!process.env.RESEND_API_KEY) {
-      console.log("Contact form submission received:", {
+      console.log("⚠️ RESEND_API_KEY not found. Logging submission:", {
         name: `${validatedData.firstName} ${validatedData.lastName}`,
         email: validatedData.email,
         subject: validatedData.subject,
@@ -44,7 +44,8 @@ export async function submitContactForm(prevState: any, formData: FormData) {
 
       return {
         success: true,
-        message: "Thank you for your message! I'll get back to you within 24 hours.",
+        message:
+          "Thank you for your message! I'll get back to you within 24 hours. (Note: Email service is being configured)",
       }
     }
 
@@ -53,8 +54,10 @@ export async function submitContactForm(prevState: any, formData: FormData) {
       const { Resend } = await import("resend")
       const resend = new Resend(process.env.RESEND_API_KEY)
 
+      console.log("📧 Attempting to send email via Resend...")
+
       const { data, error } = await resend.emails.send({
-        from: "Abdul Moiz Khan Portfolio <noreply@resend.dev>",
+        from: "Abdul Moiz Portfolio <onboarding@resend.dev>", // Using Resend's verified domain
         to: ["moiza7197@gmail.com"],
         replyTo: validatedData.email,
         subject: `Portfolio Contact: ${validatedData.subject}`,
@@ -63,7 +66,7 @@ export async function submitContactForm(prevState: any, formData: FormData) {
             <!-- Header -->
             <div style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); padding: 30px; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">
-                New Portfolio Contact
+                🎯 New Portfolio Contact
               </h1>
               <p style="color: #fed7aa; margin: 10px 0 0 0; font-size: 16px;">
                 Someone is interested in your QA services!
@@ -74,14 +77,14 @@ export async function submitContactForm(prevState: any, formData: FormData) {
             <div style="padding: 40px 30px;">
               <!-- Contact Info -->
               <div style="background-color: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 30px; border-left: 5px solid #f97316;">
-                <h2 style="color: #1e293b; margin: 0 0 20px 0; font-size: 20px;">Contact Information</h2>
+                <h2 style="color: #1e293b; margin: 0 0 20px 0; font-size: 20px;">📋 Contact Information</h2>
                 <table style="width: 100%; border-collapse: collapse;">
                   <tr>
-                    <td style="padding: 8px 0; color: #64748b; font-weight: 600; width: 100px;">Name:</td>
+                    <td style="padding: 8px 0; color: #64748b; font-weight: 600; width: 100px;">👤 Name:</td>
                     <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${validatedData.firstName} ${validatedData.lastName}</td>
                   </tr>
                   <tr>
-                    <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Email:</td>
+                    <td style="padding: 8px 0; color: #64748b; font-weight: 600;">📧 Email:</td>
                     <td style="padding: 8px 0;">
                       <a href="mailto:${validatedData.email}" style="color: #f97316; text-decoration: none; font-weight: 500;">
                         ${validatedData.email}
@@ -89,7 +92,7 @@ export async function submitContactForm(prevState: any, formData: FormData) {
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Subject:</td>
+                    <td style="padding: 8px 0; color: #64748b; font-weight: 600;">📝 Subject:</td>
                     <td style="padding: 8px 0; color: #1e293b; font-weight: 500;">${validatedData.subject}</td>
                   </tr>
                 </table>
@@ -98,7 +101,7 @@ export async function submitContactForm(prevState: any, formData: FormData) {
               <!-- Message -->
               <div style="margin-bottom: 30px;">
                 <h3 style="color: #1e293b; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #f97316; padding-bottom: 8px; display: inline-block;">
-                  Message
+                  💬 Message
                 </h3>
                 <div style="background-color: #f1f5f9; padding: 20px; border-radius: 8px; border-left: 4px solid #f97316; line-height: 1.6;">
                   <p style="margin: 0; color: #334155; font-size: 16px; white-space: pre-wrap;">${validatedData.message}</p>
@@ -117,7 +120,7 @@ export async function submitContactForm(prevState: any, formData: FormData) {
                           font-size: 16px;
                           display: inline-block;
                           box-shadow: 0 4px 6px rgba(249, 115, 22, 0.3);">
-                  Reply to ${validatedData.firstName}
+                  ↩️ Reply to ${validatedData.firstName}
                 </a>
               </div>
             </div>
@@ -125,10 +128,10 @@ export async function submitContactForm(prevState: any, formData: FormData) {
             <!-- Footer -->
             <div style="background-color: #1e293b; padding: 25px; text-align: center;">
               <p style="color: #94a3b8; margin: 0; font-size: 14px;">
-                This message was sent from your portfolio contact form
+                📨 This message was sent from your portfolio contact form
               </p>
               <p style="color: #64748b; margin: 8px 0 0 0; font-size: 12px;">
-                Received on ${new Date().toLocaleString("en-US", {
+                🕒 Received on ${new Date().toLocaleString("en-US", {
                   weekday: "long",
                   year: "numeric",
                   month: "long",
@@ -142,27 +145,28 @@ export async function submitContactForm(prevState: any, formData: FormData) {
           </div>
         `,
         text: `
-New Portfolio Contact
+🎯 NEW PORTFOLIO CONTACT
 
-From: ${validatedData.firstName} ${validatedData.lastName}
-Email: ${validatedData.email}
-Subject: ${validatedData.subject}
+👤 From: ${validatedData.firstName} ${validatedData.lastName}
+📧 Email: ${validatedData.email}
+📝 Subject: ${validatedData.subject}
 
-Message:
+💬 Message:
 ${validatedData.message}
 
-Reply to: ${validatedData.email}
-Received: ${new Date().toLocaleString()}
+↩️ Reply to: ${validatedData.email}
+🕒 Received: ${new Date().toLocaleString()}
         `,
       })
 
       if (error) {
-        console.error("Email sending error:", error)
+        console.error("❌ Email sending error:", error)
         // Log the submission even if email fails
-        console.log("Contact form submission (email failed):", {
+        console.log("📝 Contact form submission (email failed):", {
           name: `${validatedData.firstName} ${validatedData.lastName}`,
           email: validatedData.email,
           subject: validatedData.subject,
+          error: error.message,
           timestamp: new Date().toISOString(),
         })
 
@@ -172,19 +176,20 @@ Received: ${new Date().toLocaleString()}
         }
       }
 
-      console.log("Email sent successfully:", data)
+      console.log("✅ Email sent successfully:", data)
       return {
         success: true,
         message: "Thank you for your message! I'll get back to you within 24 hours.",
       }
     } catch (emailError) {
-      console.error("Email service error:", emailError)
+      console.error("❌ Email service error:", emailError)
 
       // Log the submission even if email service fails
-      console.log("Contact form submission (email service failed):", {
+      console.log("📝 Contact form submission (email service failed):", {
         name: `${validatedData.firstName} ${validatedData.lastName}`,
         email: validatedData.email,
         subject: validatedData.subject,
+        error: emailError instanceof Error ? emailError.message : "Unknown error",
         timestamp: new Date().toISOString(),
       })
 
@@ -194,7 +199,7 @@ Received: ${new Date().toLocaleString()}
       }
     }
   } catch (error) {
-    console.error("Contact form error:", error)
+    console.error("❌ Contact form error:", error)
 
     if (error instanceof Error) {
       return {
@@ -224,14 +229,14 @@ export async function subscribeToNewsletter(prevState: any, formData: FormData) 
     // Simulate newsletter subscription
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    console.log("Newsletter subscription:", email, new Date().toISOString())
+    console.log("📧 Newsletter subscription:", email, new Date().toISOString())
 
     return {
       success: true,
       message: "Successfully subscribed to newsletter!",
     }
   } catch (error) {
-    console.error("Newsletter subscription error:", error)
+    console.error("❌ Newsletter subscription error:", error)
     return {
       success: false,
       message: "Failed to subscribe. Please try again.",
