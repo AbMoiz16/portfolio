@@ -98,7 +98,7 @@ export default function Portfolio() {
             <div className="relative order-1 lg:order-2">
               <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto">
                 <Image
-                  src="/images/profile.jpg"
+                  src="/images/profile.jpg" // Updated image source
                   alt="Abdul Moiz Khan"
                   width={500}
                   height={600}
